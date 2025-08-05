@@ -1,0 +1,40 @@
+# animations.nix
+{ config, lib, pkgs, ... }:
+
+with lib;
+
+let
+  cfg = config.modules.hyprland;
+in {
+  config = mkIf cfg.enable {
+    xdg.configFile."hypr/configs/animations.conf".text = ''
+      animations {
+          enabled = true
+          bezier = myBezier, 0.05, 0.9, 0.1, 1.05
+          enabled = yes
+
+          # Additional bezier curves
+          bezier = easeInOutSine, 0.37, 0, 0.63, 1
+          bezier = overshot, 0.13,0.99,0.29,1.1
+          bezier = easeOutQuart, 0.25, 1, 0.5, 1
+          bezier = easeOutQuint, 0.22, 1, 0.36, 1
+
+          # Window animations
+          animation = windows, 1, 3, easeOutQuint, slide
+          animation = windowsIn, 1, 3, easeOutQuint, slide
+          animation = windowsOut, 1, 3, easeOutQuart, slide
+          animation = windowsMove, 1, 5, easeOutQuart
+
+          # Fade animations
+          animation = fade, 1, 5, easeOutQuart
+          animation = border, 1, 7, easeOutQuint
+          animation = workspaces, 1, 4, easeOutQuart, slide
+      }
+
+      dwindle {
+          pseudotile = true
+          preserve_split = true
+      }
+    '';
+  };
+}
