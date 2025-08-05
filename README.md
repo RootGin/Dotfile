@@ -1,3 +1,2 @@
 # Dotfile
-My NixOS dotfile with home-manager and flake
-still learning how to use it. Trying to make it as clean as possible before continue to push it
+Im setting up my NixOS dotfiles with Home Manager and Flakes. Still learning, but I want to clean things up before pushing
