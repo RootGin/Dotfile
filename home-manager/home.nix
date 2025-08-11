@@ -1,13 +1,15 @@
-{ config, pkgs, lib, colorScheme, ... }:
+{ config, pkgs, lib, colorScheme, username, host, ... }:
 {
   imports = [
     ./modules/hyprland
-    ./modules/theme
+    ./modules/theme/gtk.nix
     ./modules/editor
+    ./modules/browser
+    ./modules/game/minecraft.nix
   ];
 
-  home.username = "rootgin";
-  home.homeDirectory = "/home/rootgin";
+  home.username = username;
+  home.homeDirectory = "/home/${username}";
   home.stateVersion = "25.05";
 
   programs.home-manager.enable = true;

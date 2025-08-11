@@ -7,14 +7,29 @@
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    hyprland.url = "github:hyprwm/Hyprland";
     nix-colors.url = "github:misterio77/nix-colors";
+    zen-browser = {
+      url = "github:MarceColl/zen-browser-flake";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    nur = {
+      url = "github:nix-community/NUR";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = { self, nixpkgs, home-manager, hyprland, nix-colors, ... }@inputs:
+  outputs = { self, nixpkgs, home-manager, nix-colors, zen-browser, nur, ... }@inputs:
     let
       system = "x86_64-linux";
-      pkgs = nixpkgs.legacyPackages.${system};
+      pkgs = import nixpkgs {
+        inherit system;
+        config = {
+          allowUnfree = true;
+          packageOverrides = pkgs: {
+            nur = import nur { inherit pkgs; };
+          };
+        };
+      };
       colorScheme = nix-colors.colorSchemes.nord;
     in {
       homeConfigurations.rootgin = home-manager.lib.homeManagerConfiguration {
@@ -27,8 +42,10 @@
           nix-colors.homeManagerModules.default
         ];
         extraSpecialArgs = {
-          inherit inputs hyprland nix-colors colorScheme;
+          inherit inputs nix-colors zen-browser colorScheme system;
           assetsDir = ./assets;
+          username = "rootgin";
+          host = "nixos";
         };
       };
     };
