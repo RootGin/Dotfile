@@ -12,22 +12,16 @@
       url = "github:MarceColl/zen-browser-flake";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    nur = {
-      url = "github:nix-community/NUR";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    yazi.url = "github:sxyazi/yazi";
   };
 
-  outputs = { self, nixpkgs, home-manager, nix-colors, zen-browser, nur, ... }@inputs:
+  outputs = { self, nixpkgs, home-manager, nix-colors, zen-browser, ... }@inputs:
     let
       system = "x86_64-linux";
       pkgs = import nixpkgs {
         inherit system;
         config = {
           allowUnfree = true;
-          packageOverrides = pkgs: {
-            nur = import nur { inherit pkgs; };
-          };
         };
       };
       colorScheme = nix-colors.colorSchemes.nord;
@@ -38,7 +32,7 @@
           ./home.nix
           ./modules/hyprland
           ./modules/theme
-          ./modules/editor
+          ./modules/editors
           nix-colors.homeManagerModules.default
         ];
         extraSpecialArgs = {

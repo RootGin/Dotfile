@@ -3,9 +3,10 @@
   imports = [
     ./modules/hyprland
     ./modules/theme/gtk.nix
-    ./modules/editor
+    ./modules/editors
     ./modules/browser
-    ./modules/game/minecraft.nix
+    ./modules/programs
+    ./modules/terminal
   ];
 
   home.username = username;
@@ -18,7 +19,7 @@
   colorScheme = colorScheme;
   modules.hyprland.enable = true;
   theme.enable = true;
-  programs.editor = {
+  programs.editors = {
     enable = true;
     vscode.enable = true;
   };
