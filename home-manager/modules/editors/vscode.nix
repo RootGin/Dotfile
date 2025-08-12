@@ -3,7 +3,7 @@
 with lib;
 
 let
-  cfg = config.programs.editor.vscode;
+  cfg = config.programs.editors.vscode;
 in {
   config = mkIf cfg.enable {
     programs.vscode = {
