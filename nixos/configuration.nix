@@ -1,27 +1,53 @@
+# Edit this configuration file to define what should be installed on
+# your system. Help is available in the configuration.nix(5) man page
+# and in the NixOS manual (accessible by running 'nixos-help').
+
 { config, pkgs, ... }:
 
 {
   imports = [
-    ./hardware-configuration.nix
-    ./features/nix.nix
-    ./features/boot.nix
-    ./features/networking.nix
-    ./features/locale.nix
-    ./features/users.nix
-    ./features/sound.nix
-    ./features/printer.nix
-    
-    ./features/desktop/kde.nix
+    ./features
     ./features/desktop/hyprland.nix
   ];
+  # Hardware configuration
+#  hardware = {
+#    graphics.enable = true;
+#  };
 
-  nixpkgs.config.allowUnfree = true;
-
-  services.displayManager.sddm = {
-    enable = true;
-    wayland.enable = true;
-    autoNumlock = true;
+  # Services
+  services = {
+    # Desktop services
+#    flatpak = {
+#      enable = true;
+#      update.onActivation = true;
+#    };
+#    blueman.enable = true;
+    
+    # Display and desktop
+    xserver = {
+      enable = true;
+      xkb = {
+        layout = "us";
+        variant = "";
+      };
+    };
+    
+    displayManager.sddm.enable = true;
+    desktopManager.plasma6.enable = true;
+    
+    # System services
+    dbus.enable = true;
   };
 
-  system.stateVersion = "25.05";
+  # Programs
+  programs.firefox.enable = true;
+
+  # System packages
+  environment.systemPackages = with pkgs; [
+    # Add system-wide packages here
+    unzip zip
+    flameshot
+    rofi tree
+    wlogout git
+  ];
 }

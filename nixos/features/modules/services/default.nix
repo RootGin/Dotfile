@@ -1,0 +1,7 @@
+{
+  imports = [
+    ./blueman
+    ./flatpak
+    ./tailscale
+  ];
+}

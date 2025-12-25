@@ -1,6 +1,7 @@
 { config, pkgs, ... }:
 
 {
+  # Hyprland configuration
   programs.hyprland = {
     enable = true;
     xwayland.enable = true;
@@ -21,9 +22,10 @@
     CLUTTER_BACKEND = "wayland";
   };
 
+  # Hyprland applications
   environment.systemPackages = with pkgs; [
     waybar
-    rofi-wayland
+    rofi
     kitty
     swaylock
     swayidle
