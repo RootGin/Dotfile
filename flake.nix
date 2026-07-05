@@ -60,6 +60,7 @@
     };
 
     nvf.url = "github:notashelf/nvf";
+
     vicinae = {
       url = "github:vicinaehq/vicinae/v0.20.3";
       inputs.nixpkgs.follows = "nixpkgs";
