@@ -40,6 +40,10 @@ in
 
       # ── Niri compositor (system integration) ────────────────
       programs.niri.enable = true;
+      # Use niri-unstable for latest fixes (PipeWire SHM fallback, format
+      # negotiation improvements for Electron/Chromium screen sharing).
+      nixpkgs.overlays = [ inputs.niri.overlays.niri ];
+      programs.niri.package = pkgs.niri-unstable;
 
       # ── UWSM: user Wayland session manager for smooth app launching ──
       programs.uwsm = {
@@ -54,21 +58,35 @@ in
       };
 
       # ── XDG Desktop Portal: niri compositor routes ──────────
-      # ScreenCast/Screenshot use hyprland backend (wlr-screencopy protocol)
-      # instead of gnome (which needs mutter/GNOME Shell).
-      xdg.portal.extraPortals = [
-        pkgs.xdg-desktop-portal-gnome
-        pkgs.xdg-desktop-portal-gtk
-        pkgs.xdg-desktop-portal-hyprland
-      ];
-      xdg.portal.config.niri = {
-        default = [ "gtk" ];
-        "org.freedesktop.impl.portal.Access" = [ "gtk" ];
-        "org.freedesktop.impl.portal.FileChooser" = [ "gtk" ];
-        "org.freedesktop.impl.portal.Notification" = [ "gtk" ];
-        "org.freedesktop.impl.portal.ScreenCast" = [ "hyprland" ];
-        "org.freedesktop.impl.portal.Screenshot" = [ "hyprland" ];
-        "org.freedesktop.impl.portal.Secret" = [ "gnome-keyring" ];
+      # Niri implements org.gnome.Mutter.ScreenCast D-Bus, so
+      # xdg-desktop-portal-gnome handles ScreenCast/Screenshot.
+      # GTK handles FileChooser/Access/Notification/Secret.
+      #
+      # Settings MUST also route to gnome: xdg-desktop-portal-gtk's
+      # Settings impl breaks when ScreenCast uses gnome (#2399).
+      #
+      # WARNING: Do NOT set GDK_BACKEND globally — it breaks the
+      # gnome portal's ability to render its UI (confirmed by wiki).
+      xdg.portal = {
+        enable = true;
+        xdgOpenUsePortal = true;
+        extraPortals = [
+          pkgs.xdg-desktop-portal-gtk
+          pkgs.xdg-desktop-portal-gnome
+        ];
+        config.niri = {
+          default = [ "gtk" ];
+          "org.freedesktop.impl.portal.Access" = [ "gtk" ];
+          "org.freedesktop.impl.portal.FileChooser" = [ "gtk" ];
+          "org.freedesktop.impl.portal.Notification" = [ "gtk" ];
+          "org.freedesktop.impl.portal.ScreenCast" = [ "gnome" ];
+          "org.freedesktop.impl.portal.Screenshot" = [ "gnome" ];
+          "org.freedesktop.impl.portal.Settings" = [
+            "gtk"
+            "gnome"
+          ];
+          "org.freedesktop.impl.portal.Secret" = [ "gnome-keyring" ];
+        };
       };
 
       # ── Import niri.service + portal backend systemd user units
@@ -421,6 +439,23 @@ in
                 "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1"
               ];
             }
+            # Restart portals once Niri's ScreenCast D-Bus is available.
+            # xdg-desktop-portal-gnome starts before Niri's D-Bus interface
+            # is ready, so it registers without screencast capability.
+            {
+              command = [
+                (lib.getExe (
+                  pkgs.writeShellScriptBin "niri-restart-portals" ''
+                    # Wait for Niri's Mutter.ScreenCast D-Bus to be ready
+                    while ! busctl --user status org.gnome.Mutter.ScreenCast >/dev/null 2>&1; do
+                      sleep 0.2
+                    done
+                    # Restart portal to pick up screencast capability
+                    systemctl --user restart xdg-desktop-portal.service
+                  ''
+                ))
+              ];
+            }
           ];
 
           # Cursor theme
@@ -440,7 +475,8 @@ in
             XDG_CURRENT_DESKTOP = "X-NIXOS-SYSTEMD-AWARE:niri";
             XDG_SESSION_DESKTOP = "niri";
             GTK_USE_PORTAL = "1";
-            GDK_BACKEND = "wayland,x11";
+            # Do NOT set GDK_BACKEND — it breaks xdg-desktop-portal-gnome's
+            # screencast UI (confirmed by niri wiki + multiple GH issues).
             MOZ_ENABLE_WAYLAND = "1";
             QT_QPA_PLATFORM = "wayland";
             QT_QPA_PLATFORMTHEME = "qt5ct";
