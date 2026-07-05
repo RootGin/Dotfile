@@ -143,44 +143,64 @@
             "$mainMod" = "Super";
 
             bind = [
-              # System
+              # ── System (matching Niri) ─────────────────────────
               "$mainMod, C, killactive"
               "$mainMod, M, exit"
               "$mainMod, V, togglefloating"
               "$mainMod, L, exec, hyprlock"
-              "$mainMod, P, pseudo"
-              "$mainMod, J, togglesplit"
               "$mainMod SHIFT, R, exec, dunstctl history-pop"
               "Alt, Return, fullscreen"
 
-              # Applications
+              # ── Applications (matching Niri) ───────────────────
               "$mainMod, Q, exec, kitty"
               "$mainMod, F, exec, ${config.userOptions.browser}"
               "$mainMod, E, exec, uwsm app -- dolphin"
               "$mainMod, R, exec, vicinae toggle"
 
-              # Screenshot
-              "$mainMod SHIFT, Print, exec, hyprshot -m region -s ~/Pictures/Screenshots"
+              # ── Screenshot (matching Niri) ─────────────────────
+              # Print → full screen to clipboard (grim)
+              ", Print, exec, ${lib.getExe pkgs.grim} - | ${pkgs.wl-clipboard}/bin/wl-copy"
+              # Mod+Shift+Print → interactive region to clipboard (grim+slurp)
+              "$mainMod SHIFT, Print, exec, ${lib.getExe pkgs.grim} -g \"$(${lib.getExe pkgs.slurp} -w 0)\" - | ${pkgs.wl-clipboard}/bin/wl-copy"
+              # Mod+Ctrl+S → focused display to clipboard
+              "$mainMod CTRL, S, exec, ${lib.getExe pkgs.grim} -l 0 - | ${pkgs.wl-clipboard}/bin/wl-copy"
+              # Mod+Ctrl+Shift+S → full display to clipboard
+              "$mainMod CTRL SHIFT, S, exec, ${lib.getExe pkgs.grim} -l 0 - | ${pkgs.wl-clipboard}/bin/wl-copy"
+              # Mod+Shift+E → clipboard to swappy editor
+              "$mainMod SHIFT, E, exec, ${pkgs.wl-clipboard}/bin/wl-paste | ${lib.getExe pkgs.swappy} -f -"
+              # Mod+Shift+Q → QR code scanner
+              "$mainMod SHIFT, Q, exec, result=$(${lib.getExe pkgs.grim} -g \"$(${lib.getExe pkgs.slurp} -w 0)\" - | ${lib.getExe pkgs.zbar}/bin/zbarimg -q --raw - 2>/dev/null) && echo \"$result\" | ${pkgs.wl-clipboard}/bin/wl-copy && ${pkgs.libnotify}/bin/notify-send \"QR Code\" \"$result\" || ${pkgs.libnotify}/bin/notify-send \"QR Scan\" \"No QR code found\""
 
-              # Focus
+              # ── Focus: vim-style (matching Niri) ───────────────
+              "$mainMod, H, movefocus, l"
+              "$mainMod, J, movefocus, d"
+              "$mainMod, K, movefocus, u"
+
+              # ── Focus: arrow keys ──────────────────────────────
               "$mainMod, left,  movefocus, l"
               "$mainMod, right, movefocus, r"
               "$mainMod, up,    movefocus, u"
               "$mainMod, down,  movefocus, d"
 
-              # Move window
+              # ── Move window: vim-style (matching Niri) ─────────
+              "$mainMod SHIFT, H, movewindow, l"
+              "$mainMod SHIFT, J, movewindow, d"
+              "$mainMod SHIFT, K, movewindow, u"
+              "$mainMod SHIFT, L, movewindow, r"
+
+              # ── Move window: arrow keys ────────────────────────
               "$mainMod SHIFT, left,  movewindow, l"
               "$mainMod SHIFT, right, movewindow, r"
               "$mainMod SHIFT, up,    movewindow, u"
               "$mainMod SHIFT, down,  movewindow, d"
 
-              # Resize window
+              # ── Resize window (Mod+Alt+arrows, matching Niri) ──
               "$mainMod ALT, left,  resizeactive, -40 0"
               "$mainMod ALT, right, resizeactive,  40 0"
               "$mainMod ALT, up,    resizeactive,  0 -40"
               "$mainMod ALT, down,  resizeactive,  0  40"
 
-              # Workspaces
+              # ── Workspace switching (matching Niri) ────────────
               "$mainMod, 1, workspace, 1"
               "$mainMod, 2, workspace, 2"
               "$mainMod, 3, workspace, 3"
@@ -192,7 +212,7 @@
               "$mainMod, 9, workspace, 9"
               "$mainMod, 0, workspace, 10"
 
-              # Move to workspace
+              # ── Move window to workspace (matching Niri) ───────
               "$mainMod SHIFT, 1, movetoworkspace, 1"
               "$mainMod SHIFT, 2, movetoworkspace, 2"
               "$mainMod SHIFT, 3, movetoworkspace, 3"
@@ -204,7 +224,7 @@
               "$mainMod SHIFT, 9, movetoworkspace, 9"
               "$mainMod SHIFT, 0, movetoworkspace, 10"
 
-              # Move to workspace silent
+              # ── Move window to workspace silent (matching Niri) ──
               "$mainMod ALT, 1, movetoworkspacesilent, 1"
               "$mainMod ALT, 2, movetoworkspacesilent, 2"
               "$mainMod ALT, 3, movetoworkspacesilent, 3"
@@ -216,11 +236,7 @@
               "$mainMod ALT, 9, movetoworkspacesilent, 9"
               "$mainMod ALT, 0, movetoworkspacesilent, 10"
 
-              # Scratchpad
-              "$mainMod, S, togglespecialworkspace, magic"
-              "$mainMod SHIFT, S, movetoworkspace, special:magic"
-
-              # Scroll workspaces
+              # ── Scroll workspaces ──────────────────────────────
               "$mainMod, mouse_down, workspace, e+1"
               "$mainMod, mouse_up,   workspace, e-1"
             ];
