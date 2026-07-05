@@ -8,8 +8,13 @@
       ...
     }:
     let
-      username = config.userOptions.username;
-      librewolf = config.programs.browsing.firefox.package == pkgs.librewolf;
+      inherit (config.userOptions) username;
+
+      # Browser detection — match by package name (librewolf‑branded Firefox vs vanilla).
+      firefoxPkg = config.programs.browsing.firefox.package;
+      librewolf =
+        firefoxPkg != null && lib.hasPrefix "librewolf" (firefoxPkg.pname or firefoxPkg.name or "");
+      chromium = config.programs.browsing.chromium.enable;
 
       defaultApps = {
         browser = "zen.desktop";
@@ -76,6 +81,7 @@
     {
       imports = [ inputs.home-manager.nixosModules.home-manager ];
 
+      # ── MIME type associations ───────────────────────────────
       xdg.mime = {
         enable = true;
         defaultApplications =
@@ -86,11 +92,25 @@
               ) mimeMap
             )
           )
-          // lib.optionalAttrs librewolf {
+          # If librewolf is the firefox package AND chromium isn't enabled,
+          # register it as the default browser. Otherwise the default
+          # (zen.desktop) applies.
+          // lib.optionalAttrs (librewolf && !chromium) {
             "text/html" = [ "librewolf.desktop" ];
             "x-scheme-handler/http" = [ "librewolf.desktop" ];
             "x-scheme-handler/https" = [ "librewolf.desktop" ];
           };
+      };
+
+      # ── Portal fallback (common) — compositor‑specific config  ──
+      # (e.g. hyprland) takes priority over config.common at runtime.
+      xdg.portal.config.common = {
+        default = [
+          "hyprland"
+          "gtk"
+        ];
+        "org.freedesktop.impl.portal.Secret" = [ "gnome-keyring" ];
+        "org.freedesktop.impl.portal.FileChooser" = [ "gtk" ];
       };
 
       environment.systemPackages = with pkgs; [
