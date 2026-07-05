@@ -24,7 +24,7 @@
           imports = [
             inputs.vicinae.homeManagerModules.default
           ];
-          stylix.targets.vicinae.enable = false;
+          stylix.targets.vicinae.enable = true;
 
           services.vicinae = {
             enable = true;
@@ -38,15 +38,6 @@
             settings = {
               favicon_service = "twenty";
               font.normal.normal = "Geist";
-              theme = {
-                dark = {
-                  name = "gruvbox-dark";
-                  icon_theme = "default";
-                };
-              };
-              launcher_window = {
-                opacity = 0.8;
-              };
             };
           };
         };

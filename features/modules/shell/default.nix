@@ -31,6 +31,8 @@
         };
       };
       environment.systemPackages = with pkgs; [
+        direnv
+        nix-direnv
         acpi
         bat
         bat-extras.batman

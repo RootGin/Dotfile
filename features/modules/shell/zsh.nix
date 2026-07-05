@@ -68,6 +68,7 @@
               source ~/.config/zsh/.p10k.zsh
               POWERLEVEL9K_DISABLE_CONFIGURATION_WIZARD=true
               eval "$(tirith init --shell zsh)"
+              eval "$(direnv hook zsh)"
               eval "$(zoxide init --cmd cd zsh)"
             '';
           };
