@@ -32,8 +32,8 @@
         enable = true;
         settings = {
           Resolve = {
-            DNSSEC = true;
-            DNSOverTLS = true;
+            DNSSEC = false;
+            DNSOverTLS = false;
             DNS = [
               "9.9.9.11"
               "149.112.112.11"
