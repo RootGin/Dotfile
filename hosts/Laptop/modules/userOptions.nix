@@ -4,7 +4,7 @@
     { config, ... }:
     {
       config.userOptions = {
-        browser = "zen-beta";
+        browser = "zen-twilight";
         colorScheme = "nord";
         spicetifyColorScheme = "Nord";
         discordClient = "equibop";
