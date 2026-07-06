@@ -224,6 +224,10 @@
               "$mainMod SHIFT, 9, movetoworkspace, 9"
               "$mainMod SHIFT, 0, movetoworkspace, 10"
 
+              # ── Scratchpad (magic workspace) ──────────────────────
+              "$mainMod, S, togglespecialworkspace, magic"
+              "$mainMod SHIFT, S, movetoworkspace, special:magic"
+
               # ── Move window to workspace silent (matching Niri) ──
               "$mainMod ALT, 1, movetoworkspacesilent, 1"
               "$mainMod ALT, 2, movetoworkspacesilent, 2"
