@@ -4,15 +4,35 @@
     {
       config,
       pkgs,
+      lib,
       ...
     }:
     let
       inherit (config.userOptions) colorScheme;
+      fontDir = ../../../assets/fonts;
     in
     {
       imports = [
         inputs.stylix.nixosModules.stylix
       ];
+
+      fonts = {
+        packages = [
+          (pkgs.runCommand "be-vietnam-pro"
+            {
+              meta = {
+                description = "Be Vietnam Pro - Neo Grotesk typeface";
+                homepage = "https://fonts.google.com/specimen/Be+Vietnam+Pro";
+                license = lib.licenses.ofl;
+              };
+            }
+            ''
+              mkdir -p $out/share/fonts/truetype/be-vietnam-pro
+              ln -s ${fontDir}/*.ttf $out/share/fonts/truetype/be-vietnam-pro/
+            ''
+          )
+        ];
+      };
 
       stylix = {
         enable = true;
