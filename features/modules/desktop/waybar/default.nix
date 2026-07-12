@@ -51,7 +51,13 @@
         network = {
           interface = "wlo1";
           format-wifi = "{icon}";
-          format-icons = [ "[ 󰤯 ]" "[ 󰤟 ]" "[ 󰤢 ]" "[ 󰤥 ]" "[ 󰤨 ]" ];
+          format-icons = [
+            "[ 󰤯 ]"
+            "[ 󰤟 ]"
+            "[ 󰤢 ]"
+            "[ 󰤥 ]"
+            "[ 󰤨 ]"
+          ];
           format-ethernet = "󰀂";
           format-alt = "[ 󱛇 ]";
           format-disconnected = "󰖪";
@@ -100,8 +106,30 @@
         battery = {
           format = "{icon}  {capacity}%";
           format-icons = {
-            charging = [ "󰢜" "󰂆" "󰂇" "󰂈" "󰢝" "󰂉" "󰢞" "󰂊" "󰂋" "󰂅" ];
-            default = [ "󰁺" "󰁻" "󰁼" "󰁽" "󰁾" "󰁿" "󰂀" "󰂁" "󰂂" "󰁹" ];
+            charging = [
+              "󰢜"
+              "󰂆"
+              "󰂇"
+              "󰂈"
+              "󰢝"
+              "󰂉"
+              "󰢞"
+              "󰂊"
+              "󰂋"
+              "󰂅"
+            ];
+            default = [
+              "󰁺"
+              "󰁻"
+              "󰁼"
+              "󰁽"
+              "󰁾"
+              "󰁿"
+              "󰂀"
+              "󰂁"
+              "󰂂"
+              "󰁹"
+            ];
           };
           format-full = "Charged ";
           interval = 5;
@@ -131,7 +159,14 @@
 
         backlight = {
           format = "󰛨  {percent}%";
-          format-icons = [ "󰃞" "󰃟" "󰃠" "󰃝" "󰃜" "󰃛" ];
+          format-icons = [
+            "󰃞"
+            "󰃟"
+            "󰃠"
+            "󰃝"
+            "󰃜"
+            "󰃛"
+          ];
           class = "flicker-bar";
           on-click = "/etc/xdg/waybar/scripts/brightness-slider.sh";
         };
@@ -139,25 +174,25 @@
         "custom/workspace-1" = {
           exec = "/etc/xdg/waybar/scripts/workspaces/workspace-1.sh";
           interval = 1.2;
-          on-click = "niri msg action focus-workspace 1";
+          on-click = "hyprctl dispatch workspace 1";
           tooltip = "Switch to workspace 1";
         };
         "custom/workspace-2" = {
           exec = "/etc/xdg/waybar/scripts/workspaces/workspace-2.sh";
           interval = 1.3;
-          on-click = "niri msg action focus-workspace 2";
+          on-click = "hyprctl dispatch workspace 2";
           tooltip = "Switch to workspace 2";
         };
         "custom/workspace-3" = {
           exec = "/etc/xdg/waybar/scripts/workspaces/workspace-3.sh";
           interval = 1.4;
-          on-click = "niri msg action focus-workspace 3";
+          on-click = "hyprctl dispatch workspace 3";
           tooltip = "Switch to workspace 3";
         };
         "custom/workspace-4" = {
           exec = "/etc/xdg/waybar/scripts/workspaces/workspace-4.sh";
           interval = 1.5;
-          on-click = "niri msg action focus-workspace 4";
+          on-click = "hyprctl dispatch workspace 4";
           tooltip = "Switch to workspace 4";
         };
 
@@ -792,7 +827,7 @@
           text = ''
             #!/usr/bin/env bash
             # ─────────────────────────────────────────────────────────────────────────────
-            #  Rofi Power Menu — niri
+            #  Rofi Power Menu — hyprland
             # ─────────────────────────────────────────────────────────────────────────────
 
             rofi_command="rofi -dmenu -p Power"
@@ -802,7 +837,7 @@
             case $chosen in
                 Shutdown) systemctl poweroff ;;
                 Reboot)   systemctl reboot ;;
-                Logout)   niri msg action quit ;;
+                Logout)   hyprctl dispatch exit ;;
                 Suspend)  systemctl suspend ;;
                 Lock)     ~/.config/hyprlock/lock.sh ;;
             esac
@@ -893,9 +928,9 @@
           mode = "0555";
           text = ''
             #!/usr/bin/env bash
-            # workspace-1.sh — highlight workspace 1 if active (niri)
+            # workspace-1.sh — highlight workspace 1 if active (hyprland)
 
-            active=$(niri msg workspaces 2>/dev/null | awk '/^\s*\*/ {print $2}')
+            active=$(hyprctl activeworkspace -j 2>/dev/null | jq -r '.id')
 
             if [ "$active" = "1" ]; then
               echo "[<span foreground='${c.base09}'>●</span>]"
@@ -909,9 +944,9 @@
           mode = "0555";
           text = ''
             #!/usr/bin/env bash
-            # workspace-2.sh — highlight workspace 2 if active (niri)
+            # workspace-2.sh — highlight workspace 2 if active (hyprland)
 
-            active=$(niri msg workspaces 2>/dev/null | awk '/^\s*\*/ {print $2}')
+            active=$(hyprctl activeworkspace -j 2>/dev/null | jq -r '.id')
 
             if [ "$active" = "2" ]; then
               echo "[<span foreground='${c.base09}'>●</span>]"
@@ -925,9 +960,9 @@
           mode = "0555";
           text = ''
             #!/usr/bin/env bash
-            # workspace-3.sh — highlight workspace 3 if active (niri)
+            # workspace-3.sh — highlight workspace 3 if active (hyprland)
 
-            active=$(niri msg workspaces 2>/dev/null | awk '/^\s*\*/ {print $2}')
+            active=$(hyprctl activeworkspace -j 2>/dev/null | jq -r '.id')
 
             if [ "$active" = "3" ]; then
               echo "[<span foreground='${c.base09}'>●</span>]"
@@ -941,9 +976,9 @@
           mode = "0555";
           text = ''
             #!/usr/bin/env bash
-            # workspace-4.sh — highlight workspace 4 if active (niri)
+            # workspace-4.sh — highlight workspace 4 if active (hyprland)
 
-            active=$(niri msg workspaces 2>/dev/null | awk '/^\s*\*/ {print $2}')
+            active=$(hyprctl activeworkspace -j 2>/dev/null | jq -r '.id')
 
             if [ "$active" = "4" ]; then
               echo "[<span foreground='${c.base09}'>●</span>]"
